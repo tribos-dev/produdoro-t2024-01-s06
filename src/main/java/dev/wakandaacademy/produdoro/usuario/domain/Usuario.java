@@ -54,7 +54,7 @@ public class Usuario {
 		log.info("[finaliza] Usuario - mudaStatusParaPausaLonga");
 	}
 
-	private void validaSeUsuarioJaEstaEmPausaLonga() {
+	public void validaSeUsuarioJaEstaEmPausaLonga() {
 		log.info("[inicia] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
 		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
 			log.info("[finaliza] APIException - validaUsuario");
@@ -63,7 +63,7 @@ public class Usuario {
 		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
 	}
 
-	private void validaUsuario(UUID idUsuario) {
+	public void validaUsuario(UUID idUsuario) {
 		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {
 			log.info("[finaliza] APIException - validaUsuario");
