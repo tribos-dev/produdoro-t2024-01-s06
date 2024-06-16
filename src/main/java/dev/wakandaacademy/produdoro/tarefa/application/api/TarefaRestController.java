@@ -38,8 +38,9 @@ public class TarefaRestController implements TarefaAPI {
 	@Override
 	public void modificaOrdemDeUmaTarefa(String token, UUID idTarefa, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
 		log.info("[inicia] TarefaRestController - modificaOrdemDeUmaTarefa");
-		log.info("[TarefaNovaPosicaoRequest] {}", tarefaNovaPosicaoRequest);
-		String usuario = getUsuarioByToken(token);
+		log.debug("[TarefaNovaPosicaoRequest] {}", tarefaNovaPosicaoRequest);
+		String emailUsuario = getUsuarioByToken(token);
+		tarefaService.modificaOrdemDeUmaTarefa(emailUsuario,idTarefa,tarefaNovaPosicaoRequest);
 		log.info("[finaliza] TarefaRestController - modificaOrdemDeUmaTarefa");
 	}
 
