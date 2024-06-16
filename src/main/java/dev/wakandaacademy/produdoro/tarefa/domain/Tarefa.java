@@ -1,8 +1,10 @@
 package dev.wakandaacademy.produdoro.tarefa.domain;
 
+import java.util.List;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaNovaPosicaoRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
@@ -55,6 +57,33 @@ public class Tarefa {
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
 		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
+		}
+	}
+
+	public void mudaOrdemTarefa(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		verificaNovaPosicao(tarefas,tarefaNovaPosicaoRequest);
+		alteraOrdemTarefa(tarefas, tarefaNovaPosicaoRequest);
+	}
+
+	private void alteraOrdemTarefa(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		if (tarefaNovaPosicaoRequest.getNovaPosicao() < this.posicao) {
+			for (int i = tarefaNovaPosicaoRequest.getNovaPosicao(); i < this.posicao; i++) {
+				tarefas.get(i).posicao++;
+			}
+		} else if (tarefaNovaPosicaoRequest.getNovaPosicao() > this.posicao) {
+			for (int i = this.posicao + 1; i <= tarefaNovaPosicaoRequest.getNovaPosicao(); i++) {
+				tarefas.get(i).posicao--;
+			}
+		}
+		this.posicao = tarefaNovaPosicaoRequest.getNovaPosicao();
+	}
+
+	private void verificaNovaPosicao(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		if (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size() || tarefaNovaPosicaoRequest.getNovaPosicao().equals(this.posicao)) {
+			String mensagem = (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size())
+					? "A posição da tarefa não pode ser igual ou superior a quantidade de tarefas do usuário."
+					: String.format("A tarefa já está na posição %s.", tarefaNovaPosicaoRequest.getNovaPosicao());
+			throw APIException.build(HttpStatus.BAD_REQUEST, mensagem);
 		}
 	}
 }
