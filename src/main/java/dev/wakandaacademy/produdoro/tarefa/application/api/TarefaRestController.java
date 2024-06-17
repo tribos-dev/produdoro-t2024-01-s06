@@ -40,7 +40,7 @@ public class TarefaRestController implements TarefaAPI {
 	public List<TarefaListResponse> listaTodasTarefasDoUsuario(UUID idUsuario, String token) {
 		log.info("[inicia] TarefaRestController - listaTodasTarefasDoUsuario");
 		String email = getUsuarioByToken(token);
-		List<Tarefa> tarefas = tarefaService.listaTodasTarefasDoUsuario(email, idUsuario);
+		List<TarefaListResponse> tarefas = tarefaService.listaTodasTarefasDoUsuario(email, idUsuario);
 		log.info("[finaliza] TarefaRestController - listaTodasTarefasDoUsuario");
 		return null;
 	}
