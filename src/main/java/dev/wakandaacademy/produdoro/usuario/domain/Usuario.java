@@ -7,7 +7,9 @@ import javax.validation.constraints.Email;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.http.HttpStatus;
 
+import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.pomodoro.domain.ConfiguracaoPadrao;
 import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioNovoRequest;
 import lombok.AccessLevel;
@@ -16,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,6 +26,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Document(collection = "Usuario")
+@Log4j2
 public class Usuario {
 	@Id
 	private UUID idUsuario;
@@ -40,5 +44,19 @@ public class Usuario {
 		this.email = usuarioNovo.getEmail();
 		this.status = StatusUsuario.FOCO;
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
+	}
+
+	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+		validaUsuario(idUsuario);
+		this.status = StatusUsuario.PAUSA_CURTA;
+	}
+	
+	public void validaUsuario(UUID idUsuario) {
+		log.info("[inicia] Usuario - validaUsuario");
+		if (!this.idUsuario.equals(idUsuario)) {
+			log.info("[finaliza] APIException - validaUsuario");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticacao nao e valida");
+		}
+		log.info("[finaliza] Usuario - validaUsuario");
 	}
 }
