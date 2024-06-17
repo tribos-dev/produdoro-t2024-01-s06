@@ -35,6 +35,15 @@ public class TarefaRestController implements TarefaAPI {
 		return new TarefaDetalhadoResponse(tarefa);
 	}
 
+	@Override
+	public void marcarTarefaConcluida(String token, UUID idTarefa) {
+		log.info("[start] TarefaRestController - marcarTarefaConcluida");
+		String usuario = getUsuarioByToken(token);
+		tarefaService.marcarTarefaConcluida(usuario, idTarefa);
+		log.info("[finish] TarefaRestController - marcarTarefaConcluida");
+
+	}
+
 	private String getUsuarioByToken(String token) {
 		log.debug("[token] {}", token);
 		String usuario = tokenService.getUsuarioByBearerToken(token).orElseThrow(() -> APIException.build(HttpStatus.UNAUTHORIZED, token));
