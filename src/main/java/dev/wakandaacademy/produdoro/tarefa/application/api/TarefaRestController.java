@@ -42,7 +42,7 @@ public class TarefaRestController implements TarefaAPI {
 		String email = getUsuarioByToken(token);
 		List<TarefaListResponse> tarefas = tarefaService.listaTodasTarefasDoUsuario(email, idUsuario);
 		log.info("[finaliza] TarefaRestController - listaTodasTarefasDoUsuario");
-		return null;
+		return tarefas;
 	}
 
 	private String getUsuarioByToken(String token) {
