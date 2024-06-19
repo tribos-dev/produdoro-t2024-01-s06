@@ -21,7 +21,6 @@ public class TarefaApplicationService implements TarefaService {
     private final TarefaRepository tarefaRepository;
     private final UsuarioRepository usuarioRepository;
 
-
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
         log.info("[inicia] TarefaApplicationService - criaNovaTarefa");
@@ -29,6 +28,7 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - criaNovaTarefa");
         return TarefaIdResponse.builder().idTarefa(tarefaCriada.getIdTarefa()).build();
     }
+
     @Override
     public Tarefa detalhaTarefa(String usuario, UUID idTarefa) {
         log.info("[inicia] TarefaApplicationService - detalhaTarefa");
@@ -39,5 +39,15 @@ public class TarefaApplicationService implements TarefaService {
         tarefa.pertenceAoUsuario(usuarioPorEmail);
         log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
         return tarefa;
+    }
+
+    @Override
+    public void incrementaPomodoro(String emailDoUsuario, UUID idTarefa) {
+        log.info("[inicia] TarefaApplicationService - incrementaPomodoro");
+        Tarefa tarefa = detalhaTarefa(emailDoUsuario, idTarefa);
+        Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(emailDoUsuario);
+        tarefa.incrementaPomodoro(usuario);
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
     }
 }
