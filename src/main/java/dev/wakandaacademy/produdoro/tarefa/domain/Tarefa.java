@@ -57,7 +57,10 @@ public class Tarefa {
 	}
 
 	public void concluiTarefa(){
-		if(!status.equals(StatusTarefa.CONCLUIDA))
-			status = StatusTarefa.CONCLUIDA;
+		if(status.equals(StatusTarefa.CONCLUIDA))
+			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já foi concluida!");
+		status = StatusTarefa.CONCLUIDA;
+
+
 	}
 }
