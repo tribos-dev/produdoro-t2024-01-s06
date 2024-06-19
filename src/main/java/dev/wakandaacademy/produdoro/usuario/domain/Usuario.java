@@ -26,7 +26,6 @@ import lombok.extern.log4j.Log4j2;
 @Getter
 @ToString
 @Document(collection = "Usuario")
-@Log4j2
 public class Usuario {
 	@Id
 	private UUID idUsuario;
@@ -52,11 +51,8 @@ public class Usuario {
 	}
 	
 	public void validaUsuario(UUID idUsuario) {
-		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {
-			log.info("[finaliza] APIException - validaUsuario");
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticacao nao e valida");
 		}
-		log.info("[finaliza] Usuario - validaUsuario");
 	}
 }
