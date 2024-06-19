@@ -41,7 +41,6 @@ public class TarefaRestController implements TarefaAPI {
 		String usuario = getUsuarioByToken(token);
 		tarefaService.marcarTarefaConcluida(usuario, idTarefa);
 		log.info("[finish] TarefaRestController - marcarTarefaConcluida");
-
 	}
 
 	private String getUsuarioByToken(String token) {

@@ -76,7 +76,6 @@ class TarefaApplicationServiceTest {
         assertThrows(APIException.class,
                 () -> tarefaApplicationService.marcarTarefaConcluida(usuario.getEmail(), tarefaRequest.getIdTarefa()));
 
-
         verify(tarefaRepository, never()).salva(any(Tarefa.class));
     }
 
