@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Value
-public class TarefaListResponse {
+public class TarefaDetalhadaListResponse {
     private UUID idTarefa;
     private String descricao;
     private UUID idUsuario;
@@ -20,7 +20,7 @@ public class TarefaListResponse {
     private StatusAtivacaoTarefa statusAtivacao;
     private int contagemPomodoro;
 
-    public TarefaListResponse(Tarefa tarefa) {
+    public TarefaDetalhadaListResponse(Tarefa tarefa) {
         this.idTarefa = tarefa.getIdTarefa();
         this.descricao = tarefa.getDescricao();
         this.idUsuario = tarefa.getIdUsuario();
@@ -32,9 +32,9 @@ public class TarefaListResponse {
     }
 
 
-   public static List<TarefaListResponse> converte(List<Tarefa> tarefas) {
+   public static List<TarefaDetalhadaListResponse> converte(List<Tarefa> tarefas) {
    return tarefas.stream()
-       .map(TarefaListResponse::new)
+       .map(TarefaDetalhadaListResponse::new)
            .collect(Collectors.toList());
 
    }
