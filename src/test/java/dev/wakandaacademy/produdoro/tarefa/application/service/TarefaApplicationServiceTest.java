@@ -22,6 +22,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
+import org.webjars.NotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class TarefaApplicationServiceTest {
@@ -83,6 +84,6 @@ class TarefaApplicationServiceTest {
 
 
         // Verifique
-        assertThrows(APIException.class, () -> tarefaApplicationService.incrementaPomodoro(usuario.getEmail(), UUID.randomUUID()));
+        assertThrows(NotFoundException.class, () -> tarefaApplicationService.incrementaPomodoro(usuario.getEmail(), UUID.randomUUID()));
     }
 }
