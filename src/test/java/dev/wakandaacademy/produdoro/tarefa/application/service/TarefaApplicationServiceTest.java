@@ -1,7 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -9,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.DataHelper;
+import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
@@ -56,7 +56,7 @@ class TarefaApplicationServiceTest {
     }
 
     @Test
-    void incrementaPomodoro() {
+    void deveIncrementarPomodoro() {
         // Dado
         Tarefa tarefa = DataHelper.createTarefa();
         Usuario usuario = DataHelper.createUsuario(StatusUsuario.FOCO);
@@ -71,5 +71,18 @@ class TarefaApplicationServiceTest {
         int pomodoroDepois = tarefa.getContagemPomodoro();
         verify(tarefaRepository, times(1)).salva(any());
         assertEquals(pomodoroAntes + 1, pomodoroDepois);
+    }
+
+    @Test
+    void deveLancarNotFoundException() {
+        // Dado
+        Usuario usuario = DataHelper.createUsuario(StatusUsuario.FOCO);
+
+        // Quando
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+
+
+        // Verifique
+        assertThrows(APIException.class, () -> tarefaApplicationService.incrementaPomodoro(usuario.getEmail(), UUID.randomUUID()));
     }
 }
