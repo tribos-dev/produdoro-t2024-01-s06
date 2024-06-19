@@ -20,7 +20,7 @@ public interface TarefaAPI {
     		@PathVariable UUID idTarefa);
 
 
-    @PatchMapping("/{idTarefa}")
+    @PatchMapping("/{idTarefa}/concluida")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void marcarTarefaConcluida(@RequestHeader(name = "Authorization",required = true) String token,
                                @PathVariable UUID idTarefa);
