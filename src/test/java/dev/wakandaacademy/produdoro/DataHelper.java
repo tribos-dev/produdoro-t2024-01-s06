@@ -53,4 +53,8 @@ public class DataHelper {
 
         );
     }
+
+    public static List<Tarefa> createListTarefaVazia() {
+        return List.of();
+    }
 }
