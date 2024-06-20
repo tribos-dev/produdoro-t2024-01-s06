@@ -14,9 +14,14 @@ import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 public class DataHelper {
 
     private static final UUID usuario1 = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
+    private static final UUID usuario2 = UUID.fromString("ba313fe9-489f-4555-84c9-869f96b214e3");
 
     public static Usuario createUsuario() {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.PAUSA_LONGA).idUsuario(usuario1).build();
+    }
+
+    public static Usuario createUsuario2(StatusUsuario statusUsuario) {
+        return Usuario.builder().email("email@email.com").status(statusUsuario).idUsuario(usuario2).build();
     }
 
     public static Usuario createUsuario(StatusUsuario statusUsuario) {
@@ -26,6 +31,11 @@ public class DataHelper {
     public static Tarefa createTarefa() {
         return Tarefa.builder().contagemPomodoro(1).idTarefa(UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb"))
                 .idUsuario(usuario1).descricao("descricao tarefa").statusAtivacao(StatusAtivacaoTarefa.INATIVA).build();
+    }
+
+    public static Tarefa createTarefa(UUID usuario) {
+        return Tarefa.builder().contagemPomodoro(1).idTarefa(UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb"))
+                .idUsuario(usuario).descricao("descricao tarefa").statusAtivacao(StatusAtivacaoTarefa.INATIVA).build();
     }
 
     public static UsuarioNovoRequest getUsuarioRequest() {
