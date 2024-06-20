@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 public class RestResponseEntityExceptionHandler {
 	@ExceptionHandler(APIException.class)
 	public ResponseEntity<ErrorApiResponse> handlerGenericException(APIException ex) {
+		log.info( ex.getStatusException() + " - Exception message: " + ex.getMessage());
 		return ex.buildErrorResponseEntity();
 	}
 
