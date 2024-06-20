@@ -40,6 +40,28 @@ public class TarefaInfraRepository implements TarefaRepository {
     }
 
     @Override
+    public Integer contarTarefas(UUID idUsuario) {
+        log.info("[inicia] TarefaInfraRepository - contarTarefas");
+        Integer quantidadeTarefas = tarefaSpringMongoDBRepository.countByIdUsuario(idUsuario);
+        log.info("[finaliza] TarefaInfraRepository - contarTarefas");
+        return quantidadeTarefas;
+    }
+
+    @Override
+    public List<Tarefa> listaTodasTarefasOrdernadas(UUID idUsuario) {
+        log.info("[inicia] TarefaInfraRepository - listaTodasTarefasOrdernadas");
+        List<Tarefa> tarefasOrdenadasAsc = tarefaSpringMongoDBRepository.findByIdUsuarioOrderByPosicaoAsc(idUsuario);
+        log.info("[finaliza] TarefaInfraRepository - listaTodasTarefasOrdernadas");
+        return tarefasOrdenadasAsc;
+    }
+
+    @Override
+    public void salvaTodasTarefas(List<Tarefa> tarefas) {
+        log.info("[inicia] TarefaInfraRepository - salvaTodasTarefas");
+        tarefaSpringMongoDBRepository.saveAll(tarefas);
+        log.info("[finaliza] TarefaInfraRepository - salvaTodasTarefas");
+    }
+    
     public List<Tarefa> buscaTarefasPorIdUsuario(UUID idUsuario) {
         log.info("[inicia] TarefaInfraRepository - buscaTarefasPorIdUsuario");
         List<Tarefa> tarefas = tarefaSpringMongoDBRepository.findAllByIdUsuario(idUsuario);
