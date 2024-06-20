@@ -47,23 +47,20 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[inicia] TarefaApplicationService - incrementaPomodoro");
         Tarefa tarefa = detalhaTarefa(emailDoUsuario, idTarefa);
         Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(emailDoUsuario);
-        verificaSeUsuarioEstaEmFocoEMudaParaFocoCasoNaoEsteja(usuario);
-        mudaStatusParaPausaLongaOuCurta(tarefa, usuario);
+        mudaStatusDeAcordoComPomodoros(tarefa, usuario);
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
     }
 
-    private void verificaSeUsuarioEstaEmFocoEMudaParaFocoCasoNaoEsteja(Usuario usuario) {
+    private void mudaStatusDeAcordoComPomodoros(Tarefa tarefa, Usuario usuario) {
         if (!usuario.getStatus().equals(StatusUsuario.FOCO)) {
             usuario.mudaStatusParaFoco(usuario.getIdUsuario());
             usuarioRepository.salva(usuario);
             throw APIException.build(HttpStatus.CONFLICT, "Usuário não está com o status em 'FOCO', portanto não pode incrementar pomodoro.");
         }
-    }
-
-    private void mudaStatusParaPausaLongaOuCurta(Tarefa tarefa, Usuario usuario) {
-        if (tarefa.incrementaPomodoro() % 4 == 0) {
-
-        }
+        int pomodoros = tarefa.incrementaPomodoro();
+        if (pomodoros % 4 == 0) usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
+        else usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
+        usuarioRepository.salva(usuario);
     }
 }
