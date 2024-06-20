@@ -58,8 +58,8 @@ public class TarefaApplicationService implements TarefaService {
             usuarioRepository.salva(usuario);
             throw APIException.build(HttpStatus.CONFLICT, "Usuário não está com o status em 'FOCO', portanto não pode incrementar pomodoro.");
         }
-        int pomodoros = tarefa.incrementaPomodoro();
-        if (pomodoros % 4 == 0) usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
+        boolean sePassaram4Pomodoros = tarefa.incrementaPomodoro() % 4 == 0;
+        if (sePassaram4Pomodoros) usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
         else usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
         usuarioRepository.salva(usuario);
     }
