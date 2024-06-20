@@ -54,8 +54,10 @@ class TarefaApplicationServiceTest {
     @Test
     void deveDeletarTodasAsTarefasDoUsuario(){
         Usuario usuario = DataHelper.createUsuario();
+        List<Tarefa> tarefas = DataHelper.createListTarefa();
 
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefasPorIdUsuario(usuario.getIdUsuario())).thenReturn(tarefas);
 
         tarefaApplicationService.usuarioDeletaTodasTarefas(usuario.getEmail(), usuario.getIdUsuario());
 
@@ -63,6 +65,55 @@ class TarefaApplicationServiceTest {
        // assertEquals(); //buscar todas as tarefas do usuario
     }
 
+    @Test
+    void deveRetornarBadRequestQuandoUsuarioNaoTiverTarefasCadastradas(){
+        Usuario usuario = DataHelper.createUsuario();
+        List<Tarefa> tarefas = DataHelper.createListTarefaVazia();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefasPorIdUsuario(usuario.getIdUsuario())).thenReturn(tarefas);
+
+        APIException exception = assertThrows(APIException.class,
+                () -> tarefaApplicationService.usuarioDeletaTodasTarefas(usuario.getEmail(), usuario.getIdUsuario()));
+
+        assertEquals(exception.getMessage(), "Usuário não possui tarefa(as) cadastrada(as)");
+        assertEquals(exception.getStatusException(), HttpStatus.BAD_REQUEST);
+        verify(tarefaRepository, never()).usuarioDeletaTodasTarefas(any(UUID.class));
+
+    }
+
+    @Test
+    void deveRetornarUnauthorizedQuandoTokenNaoPertencerAoUsuario(){
+        Usuario usuario = DataHelper.createUsuario();
+        Usuario usuarioInvalido = DataHelper.createUsuarioInvalido();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+
+        APIException exception = assertThrows(APIException.class,
+                () -> tarefaApplicationService.usuarioDeletaTodasTarefas(usuario.getEmail(), usuarioInvalido.getIdUsuario()));
+
+        assertEquals(exception.getMessage(), "Usuário(a) não autorizado(a) para a requisição solicitada!");
+        assertEquals(exception.getStatusException(), HttpStatus.UNAUTHORIZED);
+        verify(tarefaRepository, never()).usuarioDeletaTodasTarefas(any(UUID.class));
+    }
+
+    @Test
+    void usuarioNaoEncontradoAoTentarExcluirTodasAsTarefas(){
+        Usuario usuarioEmail = DataHelper.createUsuario();
+        Usuario usuarioInvalido = DataHelper.createUsuarioInvalido();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(usuarioEmail.getEmail())).thenReturn(usuarioEmail);
+
+        when(usuarioRepository.buscaUsuarioPorId(usuarioInvalido.getIdUsuario()))
+                .thenThrow(APIException.build(HttpStatus.NOT_FOUND, "Usuario não encontrado!"));
+
+        APIException exception = assertThrows(APIException.class,
+                () -> tarefaApplicationService.usuarioDeletaTodasTarefas(usuarioEmail.getEmail(), usuarioInvalido.getIdUsuario()));
+
+        assertEquals(exception.getMessage(), "Usuario não encontrado!");
+        assertEquals(exception.getStatusException(), HttpStatus.NOT_FOUND);
+        verify(tarefaRepository, never()).usuarioDeletaTodasTarefas(any(UUID.class));
+    }
 
     @Test
     void deveAlterarStatusDaTarefaParaConcluidaQuandoTarefaValida(){
