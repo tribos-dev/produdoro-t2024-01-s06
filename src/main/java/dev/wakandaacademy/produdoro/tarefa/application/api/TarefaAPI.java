@@ -23,13 +23,10 @@ public interface TarefaAPI {
 
     @GetMapping("/{idTarefa}")
     @ResponseStatus(code = HttpStatus.OK)
-    TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
+    TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization",required = true) String token,
     		@PathVariable UUID idTarefa);
 
     @PostMapping("/{idTarefa}/incrementa-pomodoro")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    void incrementaPomodoro(
-            @RequestHeader(name = "Authorization") String token,
-            @PathVariable UUID idTarefa
-    );
+    void incrementaPomodoro( @RequestHeader(name = "Authorization") String token, @PathVariable UUID idTarefa);
 }
