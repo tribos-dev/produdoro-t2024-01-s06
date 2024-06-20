@@ -64,6 +64,6 @@ public class TarefaApplicationService implements TarefaService {
     private void mudaStatusParaPausaLongaOuCurta(Tarefa tarefa, Usuario usuario) {
         if (tarefa.incrementaPomodoro() % 4 == 0) {
 
-        };
+        }
     }
 }
