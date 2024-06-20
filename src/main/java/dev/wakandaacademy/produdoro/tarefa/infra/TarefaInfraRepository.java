@@ -37,4 +37,11 @@ public class TarefaInfraRepository implements TarefaRepository {
         log.info("[finaliza] TarefaInfraRepository - buscaTarefaPorId");
         return tarefaPorId;
     }
+
+    @Override
+    public void usuarioDeletaTodasTarefas(UUID idUsuario) {
+        log.info("[start] TarefaInfraRepository - deletarTodasTarefas");
+        tarefaSpringMongoDBRepository.deleteAllByIdUsuario(idUsuario);
+        log.info("[finish] TarefaInfraRepository - deletarTodasTarefas");
+    }
 }
