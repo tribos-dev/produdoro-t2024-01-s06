@@ -1,5 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.application.api;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,30 @@ public class TarefaRestController implements TarefaAPI {
 		Tarefa tarefa = tarefaService.detalhaTarefa(usuario,idTarefa);
 		log.info("[finaliza] TarefaRestController - detalhaTarefa");
 		return new TarefaDetalhadoResponse(tarefa);
+	}
+
+	@Override
+	public void modificaOrdemDeUmaTarefa(String token, UUID idTarefa, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		log.info("[inicia] TarefaRestController - modificaOrdemDeUmaTarefa");
+		log.debug("[TarefaNovaPosicaoRequest] {}", tarefaNovaPosicaoRequest);
+		String emailUsuario = getUsuarioByToken(token);
+		tarefaService.modificaOrdemDeUmaTarefa(emailUsuario,idTarefa,tarefaNovaPosicaoRequest);
+		log.info("[finaliza] TarefaRestController - modificaOrdemDeUmaTarefa");
+	}
+
+	public void marcarTarefaConcluida(String token, UUID idTarefa) {
+		log.info("[start] TarefaRestController - marcarTarefaConcluida");
+		String usuario = getUsuarioByToken(token);
+		tarefaService.marcarTarefaConcluida(usuario, idTarefa);
+		log.info("[finish] TarefaRestController - marcarTarefaConcluida");
+	}
+
+	public List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(UUID idUsuario, String token) {
+		log.info("[inicia] TarefaRestController - listaTodasTarefasDoUsuario");
+		String email = getUsuarioByToken(token);
+		List<TarefaDetalhadaListResponse> tarefas = tarefaService.listaTodasTarefasDoUsuario(email, idUsuario);
+		log.info("[finaliza] TarefaRestController - listaTodasTarefasDoUsuario");
+		return tarefas;
 	}
 
 	private String getUsuarioByToken(String token) {
