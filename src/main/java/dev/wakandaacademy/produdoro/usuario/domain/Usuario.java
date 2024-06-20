@@ -25,8 +25,8 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
-@Log4j2
 @Document(collection = "Usuario")
+@Log4j2
 public class Usuario {
 	@Id
 	private UUID idUsuario;
@@ -61,6 +61,23 @@ public class Usuario {
 			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuario ja esta em Foco");
 		}
 		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmFoco");
+	}
+
+	public void mudaStatusParaPausaLonga(UUID idUsuario) {
+		log.info("[inicia] Usuario - mudaStatusParaPausaLonga");
+		validaUsuario(idUsuario);
+		validaSeUsuarioJaEstaEmPausaLonga();
+		this.status = StatusUsuario.PAUSA_LONGA;
+		log.info("[finaliza] Usuario - mudaStatusParaPausaLonga");
+	}
+
+	public void validaSeUsuarioJaEstaEmPausaLonga() {
+		log.info("[inicia] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
+		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
+			log.info("[finaliza] APIException - validaUsuario");
+			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuario ja esta em Pausa Longa");
+		}
+		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
 	}
 
 	public void validaUsuario(UUID idUsuario) {
