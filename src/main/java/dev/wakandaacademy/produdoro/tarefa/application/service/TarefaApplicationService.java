@@ -6,6 +6,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -46,8 +47,17 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[inicia] TarefaApplicationService - incrementaPomodoro");
         Tarefa tarefa = detalhaTarefa(emailDoUsuario, idTarefa);
         Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(emailDoUsuario);
-        tarefa.incrementaPomodoro(usuario);
+        verificaSeUsuarioEstaEmFocoEMudaParaFocoCasoNaoEsteja(usuario);
+        tarefa.incrementaPomodoro();
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
+    }
+
+    private void verificaSeUsuarioEstaEmFocoEMudaParaFocoCasoNaoEsteja(Usuario usuario) {
+        if (!usuario.getStatus().equals(StatusUsuario.FOCO)) {
+            usuario.mudaStatusParaFoco(usuario.getIdUsuario());
+            usuarioRepository.salva(usuario);
+            throw APIException.build(HttpStatus.CONFLICT, "Usuário não está com o status em 'FOCO', portanto não pode incrementar pomodoro.");
+        }
     }
 }
