@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.validation.constraints.Email;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @ToString
 @Document(collection = "Usuario")
+@Log4j2
 public class Usuario {
 	@Id
 	private UUID idUsuario;
@@ -44,9 +46,29 @@ public class Usuario {
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
 	}
 
-    public void validaUsuario(UUID idUsuario) {
-		if (!this.idUsuario.equals(idUsuario)) {
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é valida!");
+	public void mudaStatusParaPausaLonga(UUID idUsuario) {
+		log.info("[inicia] Usuario - mudaStatusParaPausaLonga");
+		validaUsuario(idUsuario);
+		validaSeUsuarioJaEstaEmPausaLonga();
+		this.status = StatusUsuario.PAUSA_LONGA;
+		log.info("[finaliza] Usuario - mudaStatusParaPausaLonga");
+	}
+
+	public void validaSeUsuarioJaEstaEmPausaLonga() {
+		log.info("[inicia] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
+		if (this.status.equals(StatusUsuario.PAUSA_LONGA)) {
+			log.info("[finaliza] APIException - validaUsuario");
+			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuario ja esta em Pausa Longa");
 		}
-    }
+		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
+	}
+
+	public void validaUsuario(UUID idUsuario) {
+		log.info("[inicia] Usuario - validaUsuario");
+		if (!this.idUsuario.equals(idUsuario)) {
+			log.info("[finaliza] APIException - validaUsuario");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticacao não e valida");
+		}
+		log.info("[finaliza] Usuario - validaUsuario");
+	}
 }
