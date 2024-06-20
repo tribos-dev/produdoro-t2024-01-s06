@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.http.HttpStatus;
 
 import dev.wakandaacademy.produdoro.pomodoro.domain.ConfiguracaoPadrao;
 import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioNovoRequest;
@@ -18,7 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.http.HttpStatus;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -80,6 +80,11 @@ public class Usuario {
 		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
 	}
 
+	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+		validaUsuario(idUsuario);
+		this.status = StatusUsuario.PAUSA_CURTA;
+	}
+	
 	public void validaUsuario(UUID idUsuario) {
 		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {

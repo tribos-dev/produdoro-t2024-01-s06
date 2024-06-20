@@ -1,5 +1,7 @@
 package dev.wakandaacademy.produdoro.usuario.application.api;
 
+import java.util.UUID;
+
 import javax.validation.Valid;
 
 import dev.wakandaacademy.produdoro.config.security.service.TokenService;
@@ -11,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import dev.wakandaacademy.produdoro.usuario.application.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-
-import java.util.UUID;
 
 @RestController
 @Validated
@@ -51,8 +51,22 @@ public class UsuarioController implements UsuarioAPI {
 	public void mudaStatusParaPausaLonga(String token, UUID idUsuario) {
 		log.info("[inicia] UsuarioController - mudaStatusParaPausaLonga");
 		String usuario = tokenService.getUsuarioByBearerToken(token)
-						.orElseThrow(() -> APIException.build(HttpStatus.FORBIDDEN, "Token invalido"));
+				.orElseThrow(() -> APIException.build(HttpStatus.FORBIDDEN, "Token invalido"));
 		usuarioAppplicationService.mudaStatusParaPausaLonga(usuario, idUsuario);
 		log.info("[finaliza] UsuarioController - mudaStatusParaPausaLonga");
+	}
+
+	@Override
+	public void mudaStatusParaPausaCurta(String token, UUID idUsuario) {
+		log.info("[inicia] UsuarioController - mudaStatusParaPausaCurta");
+		String usuario = validaTokenUsuario(token);
+		usuarioAppplicationService.mudaStatusParaPausaCurta(usuario, idUsuario);
+		log.info("[finaliza] UsuarioController - mudaStatusParaPausaCurta");
+	}
+	
+	private String validaTokenUsuario(String token) {
+		String usuario = tokenService.getUsuarioByBearerToken(token)
+						.orElseThrow(() -> APIException.build(HttpStatus.FORBIDDEN, "Token invalido"));
+		return usuario;
 	}
 }
