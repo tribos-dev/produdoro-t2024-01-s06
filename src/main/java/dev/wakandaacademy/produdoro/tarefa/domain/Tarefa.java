@@ -56,7 +56,7 @@ public class Tarefa {
 		}
 	}
 
-	public void incrementaPomodoro() {
-		contagemPomodoro++;
+	public int incrementaPomodoro() {
+		return ++contagemPomodoro;
 	}
 }
