@@ -61,4 +61,11 @@ public class TarefaInfraRepository implements TarefaRepository {
         tarefaSpringMongoDBRepository.saveAll(tarefas);
         log.info("[finaliza] TarefaInfraRepository - salvaTodasTarefas");
     }
+    
+    public List<Tarefa> buscaTarefasPorIdUsuario(UUID idUsuario) {
+        log.info("[inicia] TarefaInfraRepository - buscaTarefasPorIdUsuario");
+        List<Tarefa> tarefas = tarefaSpringMongoDBRepository.findAllByIdUsuario(idUsuario);
+        log.info("[finaliza] TarefaInfraRepository - buscaTarefasPorIdUsuario");
+        return tarefas;
+    }
 }
