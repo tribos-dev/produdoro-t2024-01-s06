@@ -63,6 +63,11 @@ public class Usuario {
 		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmFoco");
 	}
 
+	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+		validaUsuario(idUsuario);
+		this.status = StatusUsuario.PAUSA_CURTA;
+	}
+
 	public void mudaStatusParaPausaLonga(UUID idUsuario) {
 		log.info("[inicia] Usuario - mudaStatusParaPausaLonga");
 		validaUsuario(idUsuario);
@@ -89,7 +94,7 @@ public class Usuario {
 		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {
 			log.info("[finaliza] APIException - validaUsuario");
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticacao nao e valida");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticacao não e valida");
 		}
 		log.info("[finaliza] Usuario - validaUsuario");
 	}

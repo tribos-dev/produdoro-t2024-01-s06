@@ -1,10 +1,14 @@
 package dev.wakandaacademy.produdoro.usuario.application.service;
 
-import dev.wakandaacademy.produdoro.DataHelper;
-import dev.wakandaacademy.produdoro.handler.APIException;
-import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
-import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
-import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,8 +26,15 @@ import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
 
+import dev.wakandaacademy.produdoro.DataHelper;
+import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
+import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
+
 @ExtendWith(MockitoExtension.class)
 class UsuarioApplicationServiceTest {
+	
 	@InjectMocks
 	UsuarioApplicationService usuarioApplicationService;
 	
@@ -55,8 +66,8 @@ class UsuarioApplicationServiceTest {
 		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusException());
 	}
 
-    @Test
-    void mudaStatusParaPausaLongaTest() {
+  @Test
+  void mudaStatusParaPausaLongaTest() {
         Usuario usuario = DataHelper.createUsuario();
         when(usuarioRepository.salva(any())).thenReturn(usuario);
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
@@ -65,20 +76,20 @@ class UsuarioApplicationServiceTest {
         verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuario.getIdUsuario());
         verify(usuarioRepository, times(1)).salva(usuario);
         assertEquals(StatusUsuario.PAUSA_LONGA, usuario.getStatus());
-    }
+  }
 
-    @Test
-    void validaSeUsuarioJaEstaEmPausaLonga() {
+  @Test
+  void validaSeUsuarioJaEstaEmPausaLonga() {
         Usuario usuario = DataHelper.createUsuario();
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
         usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), usuario.getIdUsuario());
         APIException exception = assertThrows(APIException.class, usuario::validaSeUsuarioJaEstaEmPausaLonga);
         assertEquals("Usuario ja esta em Pausa Longa", exception.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
-    }
+  }
 
-    @Test
-    void mudaStatusParaFocoTest() {
+  @Test
+  void mudaStatusParaFocoTest() {
         Usuario usuario = DataHelper.createUsuario();
         when(usuarioRepository.salva(any())).thenReturn(usuario);
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
@@ -87,10 +98,10 @@ class UsuarioApplicationServiceTest {
         verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuario.getIdUsuario());
         verify(usuarioRepository, times(1)).salva(usuario);
         assertEquals(StatusUsuario.FOCO, usuario.getStatus());
-    }
+  }
 
-    @Test
-    void validaSeUsuarioJaEstaEmFoco() {
+  @Test
+  void validaSeUsuarioJaEstaEmFoco() {
         Usuario usuario = DataHelper.createUsuario();
         when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
         usuarioApplicationService.mudaStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario());

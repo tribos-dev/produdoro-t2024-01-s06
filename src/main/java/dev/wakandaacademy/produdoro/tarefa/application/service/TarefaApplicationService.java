@@ -2,6 +2,8 @@ package dev.wakandaacademy.produdoro.tarefa.application.service;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaNovaPosicaoRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaDetalhadaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
@@ -12,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -25,7 +29,8 @@ public class TarefaApplicationService implements TarefaService {
     @Override
     public TarefaIdResponse criaNovaTarefa(TarefaRequest tarefaRequest) {
         log.info("[inicia] TarefaApplicationService - criaNovaTarefa");
-        Tarefa tarefaCriada = tarefaRepository.salva(new Tarefa(tarefaRequest));
+        Integer novaPosicao = tarefaRepository.contarTarefas(tarefaRequest.getIdUsuario());
+        Tarefa tarefaCriada = tarefaRepository.salva(new Tarefa(tarefaRequest,novaPosicao));
         log.info("[finaliza] TarefaApplicationService - criaNovaTarefa");
         return TarefaIdResponse.builder().idTarefa(tarefaCriada.getIdTarefa()).build();
     }
@@ -51,7 +56,8 @@ public class TarefaApplicationService implements TarefaService {
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
     }
-
+    
+    @Override
     private void mudaStatusDeAcordoComPomodoros(Tarefa tarefa, Usuario usuario) {
         if (!usuario.getStatus().equals(StatusUsuario.FOCO)) {
             usuario.mudaStatusParaFoco(usuario.getIdUsuario());
@@ -62,5 +68,38 @@ public class TarefaApplicationService implements TarefaService {
         if (sePassaram4Pomodoros) usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
         else usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
         usuarioRepository.salva(usuario);
+
+    @Transactional
+    @Override
+    public void modificaOrdemDeUmaTarefa(String emailUsuario, UUID idTarefa, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+        log.info("[inicia] TarefaApplicationService - modificaOrdemDeUmaTarefa");
+        Tarefa tarefa = detalhaTarefa(emailUsuario,idTarefa);
+        List<Tarefa> tarefas = tarefaRepository.listaTodasTarefasOrdernadas(tarefa.getIdUsuario());
+        tarefa.mudaOrdemTarefa(tarefas,tarefaNovaPosicaoRequest);
+        tarefaRepository.salvaTodasTarefas(tarefas);
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService - modificaOrdemDeUmaTarefa");
+    }
+
+    @Override
+    public void marcarTarefaConcluida(String usuario, UUID idTarefa) {
+        log.info("[start] TarefaApplicationService - marcarTarefaConcluida");
+        Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
+        tarefa.concluiTarefa();
+        tarefaRepository.salva(tarefa);
+        log.info("[finish] TarefaApplicationService - marcarTarefaConcluida");
+    }
+    
+    @Override    
+    public List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(String email, UUID idUsuario) {
+        log.info("[inicia] TarefaApplicationService - listaTodasTarefasDoUsuario");
+        Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(email);
+        log.info("[usuarioPorEmail] {}", usuarioPorEmail);
+        usuarioRepository.buscaUsuarioPorId(idUsuario);
+        usuarioPorEmail.validaUsuario(idUsuario);
+        log.info("[valida] - Usuário validado com sucesso");
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasPorIdUsuario(idUsuario);
+        log.info("[finaliza] TarefaApplicationService - listaTodasTarefasDoUsuario");
+        return TarefaDetalhadaListResponse.converte(tarefas);
     }
 }
