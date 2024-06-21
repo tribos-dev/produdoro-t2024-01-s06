@@ -1,9 +1,11 @@
 package dev.wakandaacademy.produdoro.tarefa.domain;
 
+import java.util.List;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaNovaPosicaoRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
@@ -39,8 +41,9 @@ public class Tarefa {
 	private StatusTarefa status;
 	private StatusAtivacaoTarefa statusAtivacao;
 	private int contagemPomodoro;
+	private Integer posicao;
 
-	public Tarefa(TarefaRequest tarefaRequest) {
+	public Tarefa(TarefaRequest tarefaRequest, Integer novaPosicao) {
 		this.idTarefa = UUID.randomUUID();
 		this.idUsuario = tarefaRequest.getIdUsuario();
 		this.descricao = tarefaRequest.getDescricao();
@@ -49,15 +52,50 @@ public class Tarefa {
 		this.status = StatusTarefa.A_FAZER;
 		this.statusAtivacao = StatusAtivacaoTarefa.INATIVA;
 		this.contagemPomodoro = 1;
+		this.posicao = novaPosicao;
 	}
 
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
-		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
+		if (!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
 		}
 	}
 
-    public void editaTarefa(EditaTarefaRequest editaTarefaRequest) {
+	public void editaTarefa(EditaTarefaRequest editaTarefaRequest) {
 		this.descricao = editaTarefaRequest.getDescricao();
-    }
+	}
+
+	public void mudaOrdemTarefa(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		verificaNovaPosicao(tarefas, tarefaNovaPosicaoRequest);
+		alteraOrdemTarefa(tarefas, tarefaNovaPosicaoRequest);
+	}
+
+	private void alteraOrdemTarefa(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		if (tarefaNovaPosicaoRequest.getNovaPosicao() < this.posicao) {
+			for (int i = tarefaNovaPosicaoRequest.getNovaPosicao(); i < this.posicao; i++) {
+				tarefas.get(i).posicao++;
+			}
+		} else if (tarefaNovaPosicaoRequest.getNovaPosicao() > this.posicao) {
+			for (int i = this.posicao + 1; i <= tarefaNovaPosicaoRequest.getNovaPosicao(); i++) {
+				tarefas.get(i).posicao--;
+			}
+		}
+		this.posicao = tarefaNovaPosicaoRequest.getNovaPosicao();
+	}
+
+	private void verificaNovaPosicao(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
+		if (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size()
+				|| tarefaNovaPosicaoRequest.getNovaPosicao().equals(this.posicao)) {
+			String mensagem = (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size())
+					? "A posição da tarefa não pode ser igual ou superior a quantidade de tarefas do usuário."
+					: String.format("A tarefa já está na posição %s.", tarefaNovaPosicaoRequest.getNovaPosicao());
+			throw APIException.build(HttpStatus.BAD_REQUEST, mensagem);
+		}
+	}
+
+	public void concluiTarefa() {
+		if (status.equals(StatusTarefa.CONCLUIDA))
+			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já foi concluida!");
+		status = StatusTarefa.CONCLUIDA;
+	}
 }
