@@ -69,18 +69,4 @@ public class UsuarioController implements UsuarioAPI {
 		usuarioAppplicationService.mudaStatusParaPausaLonga(usuario, idUsuario);
 		log.info("[finaliza] UsuarioController - mudaStatusParaPausaLonga");
 	}
-
-	@Override
-	public void mudaStatusParaPausaCurta(String token, UUID idUsuario) {
-		log.info("[inicia] UsuarioController - mudaStatusParaPausaCurta");
-		String usuario = validaTokenUsuario(token);
-		usuarioAppplicationService.mudaStatusParaPausaCurta(usuario, idUsuario);
-		log.info("[finaliza] UsuarioController - mudaStatusParaPausaCurta");
-	}
-	
-	private String validaTokenUsuario(String token) {
-		String usuario = tokenService.getUsuarioByBearerToken(token)
-						.orElseThrow(() -> APIException.build(HttpStatus.FORBIDDEN, "Token invalido"));
-		return usuario;
-	}
 }

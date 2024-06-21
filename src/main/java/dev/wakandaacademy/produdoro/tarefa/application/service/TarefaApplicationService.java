@@ -57,7 +57,6 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
     }
     
-    @Override
     private void mudaStatusDeAcordoComPomodoros(Tarefa tarefa, Usuario usuario) {
         if (!usuario.getStatus().equals(StatusUsuario.FOCO)) {
             usuario.mudaStatusParaFoco(usuario.getIdUsuario());
@@ -68,6 +67,7 @@ public class TarefaApplicationService implements TarefaService {
         if (sePassaram4Pomodoros) usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
         else usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
         usuarioRepository.salva(usuario);
+    }
 
     @Transactional
     @Override

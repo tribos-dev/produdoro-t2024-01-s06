@@ -85,11 +85,6 @@ public class Usuario {
 		log.info("[finaliza] Usuario - validaSeUsuarioJaEstaEmPausaLonga");
 	}
 
-	public void mudaStatusParaPausaCurta(UUID idUsuario) {
-		validaUsuario(idUsuario);
-		this.status = StatusUsuario.PAUSA_CURTA;
-	}
-	
 	public void validaUsuario(UUID idUsuario) {
 		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {
