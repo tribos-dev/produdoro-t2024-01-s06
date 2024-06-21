@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public interface TarefaSpringMongoDBRepository extends MongoRepository<Tarefa, UUID> {
     Optional<Tarefa> findByIdTarefa(UUID idTarefa);
+    void deleteAllByIdUsuario(UUID idUsuario);
     Integer countByIdUsuario(UUID idUsuario);
     List<Tarefa> findByIdUsuarioOrderByPosicaoAsc(UUID idUsuario);
     List<Tarefa> findAllByIdUsuario(UUID idUsuario);
