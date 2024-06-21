@@ -60,6 +60,21 @@ public class TarefaApplicationService implements TarefaService {
     }
 
     @Override
+    public void usuarioDeletaTodasTarefas(String emailUsuario, UUID idUsuario) {
+        log.info("[start] TarefaApplicationService - deletarTodasTarefas");
+        Usuario usuarioToken = usuarioRepository.buscaUsuarioPorEmail(emailUsuario);
+        usuarioRepository.buscaUsuarioPorId(idUsuario);
+        if (!usuarioToken.getIdUsuario().equals(idUsuario))
+            throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário(a) não autorizado(a) para a requisição solicitada!");
+
+        List<Tarefa> tarefas = tarefaRepository.buscaTarefasPorIdUsuario(idUsuario);
+
+        if(tarefas.isEmpty()) throw APIException.build(HttpStatus.BAD_REQUEST, "Usuário não possui tarefa(as) cadastrada(as)");
+
+        if(tarefas.size() >= 2) tarefaRepository.usuarioDeletaTodasTarefas(idUsuario);
+        log.info("[finish] TarefaApplicationService - deletarTodasTarefas");
+    }
+
     public void marcarTarefaConcluida(String usuario, UUID idTarefa) {
         log.info("[start] TarefaApplicationService - marcarTarefaConcluida");
         Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
