@@ -24,6 +24,13 @@ public interface TarefaAPI {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void deletaTodasTarefas(@RequestHeader(name = "Authorization",required = true) String token,
                             @PathVariable UUID idUsuario);
+                            
+    @PatchMapping("/{idTarefa}/nova-posicao")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    void modificaOrdemDeUmaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                                  @PathVariable UUID idTarefa,
+                                  @RequestBody @Valid TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest);
+
     @PatchMapping("/{idTarefa}/concluida")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void marcarTarefaConcluida(@RequestHeader(name = "Authorization",required = true) String token,
