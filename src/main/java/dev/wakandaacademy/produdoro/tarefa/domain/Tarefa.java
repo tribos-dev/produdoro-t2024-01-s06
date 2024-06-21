@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaNovaPosicaoRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
@@ -55,13 +56,17 @@ public class Tarefa {
 	}
 
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
-		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
+		if (!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
 		}
 	}
 
+	public void editaTarefa(EditaTarefaRequest editaTarefaRequest) {
+		this.descricao = editaTarefaRequest.getDescricao();
+	}
+
 	public void mudaOrdemTarefa(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
-		verificaNovaPosicao(tarefas,tarefaNovaPosicaoRequest);
+		verificaNovaPosicao(tarefas, tarefaNovaPosicaoRequest);
 		alteraOrdemTarefa(tarefas, tarefaNovaPosicaoRequest);
 	}
 
@@ -79,7 +84,8 @@ public class Tarefa {
 	}
 
 	private void verificaNovaPosicao(List<Tarefa> tarefas, TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
-		if (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size() || tarefaNovaPosicaoRequest.getNovaPosicao().equals(this.posicao)) {
+		if (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size()
+				|| tarefaNovaPosicaoRequest.getNovaPosicao().equals(this.posicao)) {
 			String mensagem = (tarefaNovaPosicaoRequest.getNovaPosicao() >= tarefas.size())
 					? "A posição da tarefa não pode ser igual ou superior a quantidade de tarefas do usuário."
 					: String.format("A tarefa já está na posição %s.", tarefaNovaPosicaoRequest.getNovaPosicao());
@@ -87,8 +93,8 @@ public class Tarefa {
 		}
 	}
 
-	public void concluiTarefa(){
-		if(status.equals(StatusTarefa.CONCLUIDA))
+	public void concluiTarefa() {
+		if (status.equals(StatusTarefa.CONCLUIDA))
 			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já foi concluida!");
 		status = StatusTarefa.CONCLUIDA;
 	}
