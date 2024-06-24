@@ -109,4 +109,9 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - listaTodasTarefasDoUsuario");
         return TarefaDetalhadaListResponse.converte(tarefas);
     }
+
+    @Override
+    public void defineTarefaComoAtiva(UUID idTarefa, String email) {
+
+    }
 }

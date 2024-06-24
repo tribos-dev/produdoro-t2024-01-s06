@@ -25,4 +25,5 @@ public interface TarefaService {
     void marcarTarefaConcluida(String usuario, UUID idTarefa);
 
     List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(String email, UUID idUsuario);
+    void defineTarefaComoAtiva(UUID idTarefa, String email);
 }
