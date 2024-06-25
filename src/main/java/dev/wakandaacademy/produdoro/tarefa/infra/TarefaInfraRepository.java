@@ -2,6 +2,7 @@ package dev.wakandaacademy.produdoro.tarefa.infra;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.RequiredArgsConstructor;
@@ -9,14 +10,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
-import javax.management.Query;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,9 +25,9 @@ import java.util.stream.IntStream;
 @Log4j2
 @RequiredArgsConstructor
 public class TarefaInfraRepository implements TarefaRepository {
-
-    private final TarefaSpringMongoDBRepository tarefaSpringMongoDBRepository;
+    
     private final MongoTemplate mongoTemplate;
+    private final TarefaSpringMongoDBRepository tarefaSpringMongoDBRepository;
 
     @Override
     public Tarefa salva(Tarefa tarefa) {
@@ -91,9 +92,17 @@ public class TarefaInfraRepository implements TarefaRepository {
     }
 
     @Override
+    public void desativaTarefas(UUID idTarefa, UUID idUsuario) {
+        Query buscaTarefasAtivas = new Query();
+        buscaTarefasAtivas.addCriteria(Criteria.where("idUsuario").is(idUsuario)
+                .and("statusAtivacao").is(StatusAtivacaoTarefa.ATIVA));
+        Update desativaTarefasAtivas = new Update();
+        desativaTarefasAtivas.set("statusAtivacao", StatusAtivacaoTarefa.INATIVA);
+        mongoTemplate.updateMulti(buscaTarefasAtivas, desativaTarefasAtivas, Tarefa.class);
+    }
     public List<Tarefa> buscaTarefasConcluidas(UUID idUsuario) {
         log.info("[inicia] TarefaInfraRepository - buscaTarefasConcluidas");
-        org.springframework.data.mongodb.core.query.Query query = new org.springframework.data.mongodb.core.query.Query();
+        Query query = new Query();
         query.addCriteria(Criteria.where("idUsuario").is(idUsuario).and("status").is(StatusTarefa.CONCLUIDA));
         List<Tarefa> tarefasConcluidas = mongoTemplate.find(query, Tarefa.class);
         log.info("[finaliza] TarefaInfraRepository - buscaTarefasConcluidas");

@@ -30,4 +30,5 @@ public interface TarefaService {
     void usuarioDeletaTodasTarefas(String emailUsuario, UUID idUsuario);
 
     List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(String email, UUID idUsuario);
+    void defineTarefaComoAtiva(UUID idTarefa, String email);
 }

@@ -142,6 +142,20 @@ public class TarefaApplicationService implements TarefaService {
     }
 
     @Override
+    public void defineTarefaComoAtiva(UUID idTarefa, String email) {
+        log.info("[inicia] TarefaApplicationService - defineTarefaComoAtiva");
+        Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(email);
+        Tarefa tarefa = tarefaRepository.buscaTarefaPorId(idTarefa)
+                .orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Tarefa não encontrada!"));
+        tarefa.pertenceAoUsuario(usuario);
+        log.info("[valida] - Tarefa pertence ao Usuário");
+        tarefa.verificaStatusAtivacao();
+        tarefaRepository.desativaTarefas(idTarefa, usuario.getIdUsuario());
+        tarefa.ativaTarefa();
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService - defineTarefaComoAtiva");
+    }
+    
     public void deletaTarefasConcluidas(String email, UUID idUsuario) {
         log.info("[inicia] TarefaRestController - deletaTarefasConcluidas");
         Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(email);
