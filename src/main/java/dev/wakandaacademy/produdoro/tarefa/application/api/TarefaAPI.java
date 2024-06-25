@@ -20,44 +20,47 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/tarefa")
 public interface TarefaAPI {
-    @PostMapping
-    @ResponseStatus(code = HttpStatus.CREATED)
-    TarefaIdResponse postNovaTarefa(@RequestBody @Valid TarefaRequest tarefaRequest);
+        @PostMapping
+        @ResponseStatus(code = HttpStatus.CREATED)
+        TarefaIdResponse postNovaTarefa(@RequestBody @Valid TarefaRequest tarefaRequest);
 
-    @GetMapping("/{idTarefa}")
-    @ResponseStatus(code = HttpStatus.OK)
-    TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
-    		@PathVariable UUID idTarefa);
-    
+        @GetMapping("/{idTarefa}")
+        @ResponseStatus(code = HttpStatus.OK)
+        TarefaDetalhadoResponse detalhaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idTarefa);
 
-	@DeleteMapping(value = "/deleta-tarefa/{idTarefa}")
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	void deletaTarefa(@RequestHeader(name = "Authorization",required = true) String token, 
-			@PathVariable UUID idTarefa);
+        @DeleteMapping(value = "/deleta-tarefa/{idTarefa}")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void deletaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idTarefa);
 
-    @PatchMapping("/editaTarefa/{idTarefa}")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    void editaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
-            @PathVariable UUID idTarefa, @RequestBody @Valid EditaTarefaRequest editaTarefaRequest);
+        @PatchMapping("/editaTarefa/{idTarefa}")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void editaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idTarefa, @RequestBody @Valid EditaTarefaRequest editaTarefaRequest);
 
-    @DeleteMapping("/{idUsuario}/exclusao-todas-tarefas")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    void deletaTodasTarefas(@RequestHeader(name = "Authorization", required = true) String token,
-            @PathVariable UUID idUsuario);
+        @DeleteMapping("/{idUsuario}/exclusao-todas-tarefas")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void deletaTodasTarefas(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idUsuario);
 
-    @PatchMapping("/{idTarefa}/nova-posicao")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    void modificaOrdemDeUmaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
-            @PathVariable UUID idTarefa,
-            @RequestBody @Valid TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest);
+        @PostMapping("/{idTarefa}/incrementa-pomodoro")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void incrementaPomodoro(@RequestHeader(name = "Authorization") String token, @PathVariable UUID idTarefa);
 
-    @PatchMapping("/{idTarefa}/concluida")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    void marcarTarefaConcluida(@RequestHeader(name = "Authorization", required = true) String token,
-            @PathVariable UUID idTarefa);
+        @PatchMapping("/{idTarefa}/nova-posicao")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void modificaOrdemDeUmaTarefa(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idTarefa,
+                        @RequestBody @Valid TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest);
 
-    @GetMapping("/lista-tarefas/{idUsuario}")
-    @ResponseStatus(code = HttpStatus.OK)
-    List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(@PathVariable UUID idUsuario,
-            @RequestHeader(name = "Authorization", required = true) String token);
+        @PatchMapping("/{idTarefa}/concluida")
+        @ResponseStatus(code = HttpStatus.NO_CONTENT)
+        void marcarTarefaConcluida(@RequestHeader(name = "Authorization", required = true) String token,
+                        @PathVariable UUID idTarefa);
+
+        @GetMapping("/lista-tarefas/{idUsuario}")
+        @ResponseStatus(code = HttpStatus.OK)
+        List<TarefaDetalhadaListResponse> listaTodasTarefasDoUsuario(@PathVariable UUID idUsuario,
+                        @RequestHeader(name = "Authorization", required = true) String token);
 }
