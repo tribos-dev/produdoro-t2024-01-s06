@@ -4,6 +4,7 @@ import dev.wakandaacademy.produdoro.DataHelper;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.*;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
@@ -279,5 +280,39 @@ class TarefaApplicationServiceTest {
         });
         assertEquals("Credencial de autenticação não é valida!", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusException());
+    }
+
+    @Test
+    void deveAtivarTarefaComSucesso() {
+        Usuario usuario = DataHelper.createUsuario();
+        String email = usuario.getEmail();
+        Tarefa tarefa = DataHelper.createTarefa();
+        UUID idTarefa = tarefa.getIdTarefa();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+
+        tarefaApplicationService.defineTarefaComoAtiva(idTarefa, email);
+
+        verify(tarefaRepository).desativaTarefas(idTarefa, usuario.getIdUsuario());
+        verify(tarefaRepository).salva(tarefa);
+        assertEquals(tarefa.getStatusAtivacao(), StatusAtivacaoTarefa.ATIVA);
+    }
+
+    @Test
+    void deveLancarExcecaoQuandoTarefaNaoForEncontrada() {
+        UUID idTarefa = UUID.randomUUID();
+        String email = "teste@teste.com";
+        Usuario usuario = DataHelper.createUsuario();
+
+        when(usuarioRepository.buscaUsuarioPorEmail(email)).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefaPorId(idTarefa)).thenReturn(Optional.empty());
+
+        APIException exception = assertThrows(APIException.class, () -> {
+            tarefaApplicationService.defineTarefaComoAtiva(idTarefa, email);
+        });
+
+        assertEquals("Tarefa não encontrada!", exception.getMessage());
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusException());
     }
 }
