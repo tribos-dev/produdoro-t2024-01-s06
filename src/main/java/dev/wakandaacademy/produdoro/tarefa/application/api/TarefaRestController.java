@@ -38,8 +38,15 @@ public class TarefaRestController implements TarefaAPI {
 	}
 
 	@Override
+	public void incrementaPomodoro(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - incrementaPomodoro");
+		String emailDoUsuario = getUsuarioByToken(token);
+		tarefaService.incrementaPomodoro(emailDoUsuario, idTarefa);
+		log.info("[finaliza] TarefaRestController - incrementaPomodoro");
+	}
+
+	@Override
 	public void editaTarefa(String token, UUID idTarefa, EditaTarefaRequest editaTarefaRequest) {
-		log.info("[inicia]  TarefaRestController - editaTarefa");
 		String usuario = getUsuarioByToken(token);
 		tarefaService.editaTarefa(usuario, idTarefa, editaTarefaRequest);
 		log.info("[finaliza]  TarefaRestController - editaTarefa");
@@ -57,7 +64,6 @@ public class TarefaRestController implements TarefaAPI {
 	public void modificaOrdemDeUmaTarefa(String token, UUID idTarefa,
 			TarefaNovaPosicaoRequest tarefaNovaPosicaoRequest) {
 		log.info("[inicia] TarefaRestController - modificaOrdemDeUmaTarefa");
-		log.debug("[TarefaNovaPosicaoRequest] {}", tarefaNovaPosicaoRequest);
 		String emailUsuario = getUsuarioByToken(token);
 		tarefaService.modificaOrdemDeUmaTarefa(emailUsuario, idTarefa, tarefaNovaPosicaoRequest);
 		log.info("[finaliza] TarefaRestController - modificaOrdemDeUmaTarefa");
@@ -87,5 +93,4 @@ public class TarefaRestController implements TarefaAPI {
 		log.info("[usuario] {}", usuario);
 		return usuario;
 	}
-
 }
