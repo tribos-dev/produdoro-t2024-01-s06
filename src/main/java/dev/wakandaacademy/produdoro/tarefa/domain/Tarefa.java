@@ -61,6 +61,10 @@ public class Tarefa {
 		}
 	}
 
+	public int incrementaPomodoro() {
+		return ++contagemPomodoro;
+	}
+
 	public void editaTarefa(EditaTarefaRequest editaTarefaRequest) {
 		this.descricao = editaTarefaRequest.getDescricao();
 	}
