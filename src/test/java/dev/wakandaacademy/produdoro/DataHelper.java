@@ -58,4 +58,10 @@ public class DataHelper {
     public static List<Tarefa> createListTarefaVazia() {
         return List.of();
     }
+
+    public static List<Tarefa> createTarefasConcluidas() {
+        return List.of(Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 1").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 2").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 3").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build());
+    }
 }
