@@ -1,26 +1,23 @@
 package dev.wakandaacademy.produdoro.usuario.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.UUID;
-
+import dev.wakandaacademy.produdoro.DataHelper;
+import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
+import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-
-import dev.wakandaacademy.produdoro.DataHelper;
-import dev.wakandaacademy.produdoro.handler.APIException;
-import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
-import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
-import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioApplicationServiceTest {
@@ -55,6 +52,7 @@ class UsuarioApplicationServiceTest {
 				() -> usuarioApplicationService.mudaStatusParaPausaCurta(usuario.getEmail(), idUsuario));
 		assertEquals(HttpStatus.UNAUTHORIZED, e.getStatusException());
 	}
+
     @Test
     void mudaStatusParaPausaLongaTest() {
         Usuario usuario = DataHelper.createUsuario();
@@ -77,4 +75,25 @@ class UsuarioApplicationServiceTest {
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
     }
 
+    @Test
+    void mudaStatusParaFocoTest() {
+        Usuario usuario = DataHelper.createUsuario();
+        when(usuarioRepository.salva(any())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        usuarioApplicationService.mudaStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario());
+        verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(usuario.getEmail());
+        verify(usuarioRepository, times(1)).buscaUsuarioPorId(usuario.getIdUsuario());
+        verify(usuarioRepository, times(1)).salva(usuario);
+        assertEquals(StatusUsuario.FOCO, usuario.getStatus());
+    }
+
+    @Test
+    void validaSeUsuarioJaEstaEmFoco() {
+        Usuario usuario = DataHelper.createUsuario();
+        when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+        usuarioApplicationService.mudaStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario());
+        APIException exception = assertThrows(APIException.class, usuario::validaSeUsuarioJaEstaEmFoco);
+        assertEquals("Usuario ja esta em Foco", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
+    }
 }
