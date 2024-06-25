@@ -98,4 +98,16 @@ public class Tarefa {
 			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já foi concluida!");
 		status = StatusTarefa.CONCLUIDA;
 	}
+
+	public void verificaStatusAtivacao() {
+		if (this.statusAtivacao.equals(StatusAtivacaoTarefa.ATIVA)) {
+			throw APIException.build(HttpStatus.NO_CONTENT, "A tarefa atual já está ativa!");
+		}
+	}
+
+	public void ativaTarefa() {
+		if (this.statusAtivacao.equals(StatusAtivacaoTarefa.INATIVA)) {
+			statusAtivacao = StatusAtivacaoTarefa.ATIVA;
+		}
+	}
 }

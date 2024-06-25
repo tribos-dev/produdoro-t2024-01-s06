@@ -2,10 +2,15 @@ package dev.wakandaacademy.produdoro.tarefa.infra;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +22,7 @@ import java.util.UUID;
 @Log4j2
 @RequiredArgsConstructor
 public class TarefaInfraRepository implements TarefaRepository {
-
+    private final MongoTemplate mongoTemplate;
     private final TarefaSpringMongoDBRepository tarefaSpringMongoDBRepository;
 
     @Override
@@ -73,5 +78,15 @@ public class TarefaInfraRepository implements TarefaRepository {
         List<Tarefa> tarefas = tarefaSpringMongoDBRepository.findAllByIdUsuario(idUsuario);
         log.info("[finaliza] TarefaInfraRepository - buscaTarefasPorIdUsuario");
         return tarefas;
+    }
+
+    @Override
+    public void desativaTarefas(UUID idTarefa, UUID idUsuario) {
+        Query buscaTarefasAtivas = new Query();
+        buscaTarefasAtivas.addCriteria(Criteria.where("idUsuario").is(idUsuario)
+                .and("statusAtivacao").is(StatusAtivacaoTarefa.ATIVA));
+        Update desativaTarefasAtivas = new Update();
+        desativaTarefasAtivas.set("statusAtivacao", StatusAtivacaoTarefa.INATIVA);
+        mongoTemplate.updateMulti(buscaTarefasAtivas, desativaTarefasAtivas, Tarefa.class);
     }
 }
