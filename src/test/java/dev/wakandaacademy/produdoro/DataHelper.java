@@ -16,10 +16,23 @@ import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 public class DataHelper {
 
     private static final UUID usuario1 = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
-    private static final UUID usuario2 = UUID.fromString("5f3f9401-3367-49ec-b3fe-b1b0a7fa6068");
+     private static final UUID usuario2 =
+     UUID.fromString("5f3f9401-3367-49ec-b3fe-b1b0a7fa6068");
 
     public static Usuario createUsuario() {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.PAUSA_LONGA).idUsuario(usuario1).build();
+    }
+
+    public static Usuario createUsuario3() {
+        return Usuario.builder().email("email@email.com").status(StatusUsuario.PAUSA_CURTA).idUsuario(usuario1).build();
+    }
+
+    public static Usuario createUsuario2(StatusUsuario statusUsuario) {
+        return Usuario.builder().email("email@email.com").status(statusUsuario).idUsuario(usuario2).build();
+    }
+
+    public static Usuario createUsuario(StatusUsuario statusUsuario) {
+        return Usuario.builder().email("email@email.com").status(statusUsuario).idUsuario(usuario1).build();
     }
 
     public static Usuario createUsuarioInvalido() {
@@ -31,6 +44,11 @@ public class DataHelper {
         return Tarefa.builder().contagemPomodoro(1).idTarefa(UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb"))
                 .idUsuario(usuario1).descricao("descricao tarefa").statusAtivacao(StatusAtivacaoTarefa.INATIVA)
                 .status(StatusTarefa.A_FAZER).build();
+    }
+
+    public static Tarefa createTarefa(UUID usuario) {
+        return Tarefa.builder().contagemPomodoro(1).idTarefa(UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb"))
+                .idUsuario(usuario).descricao("descricao tarefa").statusAtivacao(StatusAtivacaoTarefa.INATIVA).build();
     }
 
     public static UsuarioNovoRequest getUsuarioRequest() {
@@ -70,5 +88,15 @@ public class DataHelper {
 
     public static List<Tarefa> createListTarefaVazia() {
         return List.of();
+    }
+
+    public static List<Tarefa> createTarefasConcluidas() {
+        return List.of(Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 1").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 2").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 3").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build());
+    }
+    
+    public static Usuario createUsuarioFoco() {
+        return Usuario.builder().email("email@email.com").status(StatusUsuario.FOCO).idUsuario(usuario1).build();
     }
 }

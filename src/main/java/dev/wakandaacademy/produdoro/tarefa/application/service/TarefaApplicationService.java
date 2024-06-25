@@ -9,6 +9,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.StatusUsuario;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -46,6 +47,37 @@ public class TarefaApplicationService implements TarefaService {
         log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
         return tarefa;
     }
+	@Override
+	public void deletaTarefa(String usuario, UUID idTarefa) {
+		log.info("[inicia] TarefaApplicationService - deletaTarefa");
+		Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
+		tarefaRepository.deletaTarefa(tarefa);
+		log.info("[finaliza] TarefaApplicationService - deletaTarefa");
+	}
+
+    @Override
+    public void incrementaPomodoro(String emailDoUsuario, UUID idTarefa) {
+        log.info("[inicia] TarefaApplicationService - incrementaPomodoro");
+        Tarefa tarefa = detalhaTarefa(emailDoUsuario, idTarefa);
+        Usuario usuario = usuarioRepository.buscaUsuarioPorEmail(emailDoUsuario);
+        mudaStatusDeAcordoComPomodoros(tarefa, usuario);
+        tarefaRepository.salva(tarefa);
+        log.info("[finaliza] TarefaApplicationService - incrementaPomodoro");
+    }
+
+    private void mudaStatusDeAcordoComPomodoros(Tarefa tarefa, Usuario usuario) {
+        if (!usuario.getStatus().equals(StatusUsuario.FOCO))
+            usuario.mudaStatusParaFoco(usuario.getIdUsuario());
+        else {
+            int totalDePomodoros = tarefa.incrementaPomodoro();
+            boolean sePassaram4Pomodoros = totalDePomodoros % 4 == 0;
+            if (sePassaram4Pomodoros)
+                usuario.mudaStatusParaPausaLonga(usuario.getIdUsuario());
+            else
+                usuario.mudaStatusParaPausaCurta(usuario.getIdUsuario());
+        }
+        usuarioRepository.salva(usuario);
+    }
 
     @Override
     public void editaTarefa(String usuario, UUID idTarefa, EditaTarefaRequest editaTarefaRequest) {
@@ -53,7 +85,6 @@ public class TarefaApplicationService implements TarefaService {
         Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
         tarefa.editaTarefa(editaTarefaRequest);
         tarefaRepository.salva(tarefa);
-        log.info("[finaliza] TarefaApplicationService - editaTarefa");
     }
 
     @Transactional
@@ -94,7 +125,7 @@ public class TarefaApplicationService implements TarefaService {
         Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
         tarefa.concluiTarefa();
         tarefaRepository.salva(tarefa);
-        log.info("[finish] TarefaApplicationService - marcarTarefaConcluida");
+        log.info("[finaliza] TarefaApplicationService - marcarTarefaConcluida");
     }
 
     @Override
@@ -123,5 +154,20 @@ public class TarefaApplicationService implements TarefaService {
         tarefa.ativaTarefa();
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - defineTarefaComoAtiva");
+    }
+    
+    public void deletaTarefasConcluidas(String email, UUID idUsuario) {
+        log.info("[inicia] TarefaRestController - deletaTarefasConcluidas");
+        Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(email);
+        Usuario usuario = usuarioRepository.buscaUsuarioPorId(idUsuario);
+        usuario.pertenceAoUsuario(usuarioPorEmail);
+        List<Tarefa> tarefasConcluidas = tarefaRepository.buscaTarefasConcluidas(usuario.getIdUsuario());
+        if (tarefasConcluidas.isEmpty()){
+            throw APIException.build(HttpStatus.NOT_FOUND, "Usuário não possui nenhuma tarefa concluída!");
+        }
+        tarefaRepository.deletaVariasTarefas(tarefasConcluidas);
+        List<Tarefa> tarefasDoUsuario = tarefaRepository.buscaTarefasPorIdUsuario(usuario.getIdUsuario());
+        tarefaRepository.atualizaPosicoesDasTarefas(tarefasDoUsuario);
+        log.info("[finaliza] TarefaRestController - deletaTarefasConcluidas");
     }
 }

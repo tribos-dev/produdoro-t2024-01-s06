@@ -61,6 +61,10 @@ public class Tarefa {
 		}
 	}
 
+	public int incrementaPomodoro() {
+		return ++contagemPomodoro;
+	}
+
 	public void editaTarefa(EditaTarefaRequest editaTarefaRequest) {
 		this.descricao = editaTarefaRequest.getDescricao();
 	}
@@ -110,4 +114,7 @@ public class Tarefa {
 			statusAtivacao = StatusAtivacaoTarefa.ATIVA;
 		}
 	}
+    public void atualizaPosicao(int novaPosicao) {
+		this.posicao = novaPosicao;
+    }
 }
