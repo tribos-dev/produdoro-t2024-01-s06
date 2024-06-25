@@ -78,7 +78,7 @@ class UsuarioApplicationServiceTest {
 
   @Test
   void mudaStatusParaPausaLongaTest() {
-    Usuario usuario = DataHelper.createUsuario();
+    Usuario usuario = DataHelper.createUsuario3();
     when(usuarioRepository.salva(any())).thenReturn(usuario);
     when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
     usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), usuario.getIdUsuario());
@@ -90,7 +90,7 @@ class UsuarioApplicationServiceTest {
 
   @Test
   void validaSeUsuarioJaEstaEmPausaLonga() {
-    Usuario usuario = DataHelper.createUsuario();
+    Usuario usuario = DataHelper.createUsuario3();
     when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
     usuarioApplicationService.mudaStatusParaPausaLonga(usuario.getEmail(), usuario.getIdUsuario());
     APIException exception = assertThrows(APIException.class, usuario::validaSeUsuarioJaEstaEmPausaLonga);
