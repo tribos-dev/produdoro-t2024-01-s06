@@ -330,6 +330,28 @@ class TarefaApplicationServiceTest {
         assertEquals("Credencial de autenticação não é valida!", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusException());
     }
+
+    @Test
+    void deletaTarefasConcluidasSucesso(){
+        Usuario usuario = DataHelper.createUsuario();
+        List<Tarefa> tarefasConcluidas = DataHelper.createTarefasConcluidas();
+        List<Tarefa> tarefa = DataHelper.createListTarefa();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        when(usuarioRepository.buscaUsuarioPorId(any())).thenReturn(usuario);
+        when(tarefaRepository.buscaTarefasConcluidas(any())).thenReturn(tarefasConcluidas);
+        when(tarefaRepository.buscaTarefasPorIdUsuario(any())).thenReturn(tarefa);
+        tarefaApplicationService.deletaTarefasConcluidas(usuario.getEmail(), usuario.getIdUsuario());
+        verify(tarefaRepository, times(1)).deletaVariasTarefas(tarefasConcluidas);
+        verify(tarefaRepository, times(1)).atualizaPosicoesDasTarefas(tarefa);
+    }
+
+    @Test
+    void deletaTarefasConcluidasFalha(){
+        String email = "Yummi@gmail.com";
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenThrow(APIException.build(HttpStatus.NOT_FOUND, "Usuario não encontrado"));
+                assertThrows(APIException.class, ()-> tarefaApplicationService.deletaTarefasConcluidas(email, UUID.randomUUID()));
+                verify(usuarioRepository, times(1)).buscaUsuarioPorEmail(email);
+    }
     
     @Test
     void deveDeletarTarefa() {

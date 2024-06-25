@@ -102,4 +102,8 @@ public class Tarefa {
 			throw APIException.build(HttpStatus.CONFLICT, "Tarefa já foi concluida!");
 		status = StatusTarefa.CONCLUIDA;
 	}
+
+    public void atualizaPosicao(int novaPosicao) {
+		this.posicao = novaPosicao;
+    }
 }

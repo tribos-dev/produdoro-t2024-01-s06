@@ -90,6 +90,12 @@ public class DataHelper {
         return List.of();
     }
 
+    public static List<Tarefa> createTarefasConcluidas() {
+        return List.of(Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 1").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 2").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build(),
+                Tarefa.builder().idTarefa(UUID.randomUUID()).descricao("tarefa 3").idUsuario(usuario1).status(StatusTarefa.CONCLUIDA).build());
+    }
+    
     public static Usuario createUsuarioFoco() {
         return Usuario.builder().email("email@email.com").status(StatusUsuario.FOCO).idUsuario(usuario1).build();
     }
