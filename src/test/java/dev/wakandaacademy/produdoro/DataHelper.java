@@ -89,4 +89,8 @@ public class DataHelper {
     public static List<Tarefa> createListTarefaVazia() {
         return List.of();
     }
+
+    public static Usuario createUsuarioFoco() {
+        return Usuario.builder().email("email@email.com").status(StatusUsuario.FOCO).idUsuario(usuario1).build();
+    }
 }

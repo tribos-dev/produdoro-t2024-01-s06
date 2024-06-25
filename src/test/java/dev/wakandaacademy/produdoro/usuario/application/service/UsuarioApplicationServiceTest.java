@@ -44,10 +44,10 @@ import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioApplicationServiceTest {
-
-  @InjectMocks
-  UsuarioApplicationService usuarioApplicationService;
-
+	
+	@InjectMocks
+	UsuarioApplicationService usuarioApplicationService;
+	
   @Mock
   UsuarioRepository usuarioRepository;
 
